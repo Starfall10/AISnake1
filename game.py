@@ -26,7 +26,7 @@ BLACK = (0,0,0)
 BLOCK_SIZE = 20
 LENGTH = 20
 WIDTH = 20
-SPEED = 10000
+SPEED = 1000
 
 class SnakeGameAI:
 
@@ -75,13 +75,14 @@ class SnakeGameAI:
         self._move(action) # update the head
         self.snake.insert(0, self.head)
         
+        
         # 3. check if game over
         reward = 0
         game_over = False
         if self.is_collision() or self.frame_iteration > 100*len(self.snake):
             game_over = True
-            reward = -10
-            return reward, game_over, self.score
+            reward = -100
+            return reward-0.1, game_over, self.score
 
         # 4. place new food or just move
         if self.head == self.food:
@@ -95,7 +96,7 @@ class SnakeGameAI:
         self._update_ui()
         self.clock.tick(SPEED)
         # 6. return game over and score
-        return reward, game_over, self.score
+        return reward-0.1, game_over, self.score
 
 
     def is_collision(self, pt=None):
