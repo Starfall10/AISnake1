@@ -14,10 +14,10 @@ class Agent:
 
     def __init__(self):
         self.n_games = 0
-        self.epsilon = 0.1 # randomness
+        self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(11, 256, 256, 3)
+        self.model = Linear_QNet(15, 64, 64, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
 
@@ -27,6 +27,11 @@ class Agent:
         point_r = Point(head.x + 20, head.y)
         point_u = Point(head.x, head.y - 20)
         point_d = Point(head.x, head.y + 20)
+
+        point_ul = Point(head.x - 20, head.y - 20)
+        point_ur = Point(head.x + 20, head.y - 20)
+        point_dl = Point(head.x - 20, head.y + 20)
+        point_dr = Point(head.x + 20, head.y + 20)
         
         dir_l = game.direction == Direction.LEFT
         dir_r = game.direction == Direction.RIGHT
@@ -51,6 +56,18 @@ class Agent:
             (dir_u and game.is_collision(point_l)) or 
             (dir_r and game.is_collision(point_u)) or 
             (dir_l and game.is_collision(point_d)),
+
+            # Danger up left
+            (game.is_collision(point_ul)),
+            # Danger up right
+            (game.is_collision(point_ur)),
+            # Danger down left
+            (game.is_collision(point_dl)),
+            # Danger down right
+            (game.is_collision(point_dr)),
+
+            
+
             
             # Move direction
             dir_l,
