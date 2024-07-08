@@ -48,7 +48,6 @@ class SnakeGameAI:
         self.snake = [self.head,
                       Point(self.head.x-BLOCK_SIZE, self.head.y),
                       Point(self.head.x-(2*BLOCK_SIZE), self.head.y)]
-        self.tail = self.snake[-1]
 
         self.score = 0
         self.food = None
@@ -82,13 +81,13 @@ class SnakeGameAI:
         game_over = False
         if self.is_collision() or self.frame_iteration > 100*len(self.snake):
             game_over = True
-            reward = -20
+            reward = -200
             return reward, game_over, self.score
 
         # 4. place new food or just move
         if self.head == self.food:
             self.score += 1
-            reward = 10
+            reward = 1000
             self._place_food()
         else:
             self.snake.pop()
@@ -97,7 +96,7 @@ class SnakeGameAI:
         self._update_ui()
         self.clock.tick(SPEED)
         # 6. return game over and score
-        return reward-0.1, game_over, self.score
+        return reward-10, game_over, self.score
 
 
     def is_collision(self, pt=None):

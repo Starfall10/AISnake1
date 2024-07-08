@@ -17,7 +17,7 @@ class Agent:
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(32, 256, 256, 3)
+        self.model = Linear_QNet(36, 256, 128, 128, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
 
@@ -27,182 +27,6 @@ class Agent:
         point_r = Point(head.x + 20, head.y)
         point_u = Point(head.x, head.y - 20)
         point_d = Point(head.x, head.y + 20)
-
-        # Bool, check if snake, apple or tail
-
-        # up direction
-        isUpApple = False
-        isUpSnake = False
-        isUpWall = False
-        count = 1
-        while (isUpApple == False and isUpSnake == False and isUpWall == False) and count < 10:
-            point_u = Point(head.x, head.y - 20*count)
-            if game.food == point_u:
-                isUpApple = True
-                isUpSnake = False
-                isUpWall = False
-            elif point_u in game.snake:
-                isUpApple = False
-                isUpSnake = True
-                isUpWall = False
-            elif point_u.x < 0 or point_u.y < 0:
-                isUpApple = False
-                isUpSnake = False
-                isUpWall = True
-            count += 1
-
-        # up right direction
-        isUpRightApple = False
-        isUpRightSnake = False
-        isUpRightWall = False
-        count = 1
-        while (isUpRightApple == False and isUpRightSnake == False and isUpRightWall == False) and count < 10:
-            point_ur = Point(head.x + 20*count, head.y - 20*count)
-            if game.food == point_ur:
-                isUpRightApple = True
-                isUpRightSnake = False
-                isUpRightWall = False
-            elif point_ur in game.snake:
-                isUpRightApple = False
-                isUpRightSnake = True
-                isUpRightWall = False
-            elif point_ur.x < 0 or point_ur.y < 0:
-                isUpRightApple = False
-                isUpRightSnake = False
-                isUpRightWall = True
-            count += 1
-
-
-        # right direction
-        isRightApple = False
-        isRightSnake = False
-        isRightWall = False
-        count = 1
-        while (isRightApple == False and isRightSnake == False and isRightWall == False) and count < 10:
-            point_r = Point(head.x + 20*count, head.y)
-            if game.food == point_r:
-                isRightApple = True
-                isRightSnake = False
-                isRightWall = False
-            elif point_r in game.snake:
-                isRightApple = False
-                isRightSnake = True
-                isRightWall = False
-            elif point_r.x < 0 or point_r.y < 0:
-                isRightApple = False
-                isRightSnake = False
-                isRightWall = True
-            count += 1
-
-        # down right direction
-        isDownRightApple = False
-        isDownRightSnake = False
-        isDownRightWall = False
-        count = 1
-        while (isDownRightApple == False and isDownRightSnake == False and isDownRightWall == False) and count < 10:
-            point_dr = Point(head.x + 20*count, head.y + 20*count)
-            if game.food == point_dr:
-                isDownRightApple = True
-                isDownRightSnake = False
-                isDownRightWall = False
-            elif point_dr in game.snake:
-                isDownRightApple = False
-                isDownRightSnake = True
-                isDownRightWall = False
-            elif point_dr.x < 0 or point_dr.y < 0:
-                isDownRightApple = False
-                isDownRightSnake = False
-                isDownRightWall = True
-            count += 1
-
-        # down direction
-        isDownApple = False
-        isDownSnake = False
-        isDownWall = False
-        count = 1
-        while (isDownApple == False and isDownSnake == False and isDownWall == False) and count < 10:
-            point_d = Point(head.x, head.y + 20*count)
-            if game.food == point_d:
-                isDownApple = True
-                isDownSnake = False
-                isDownWall = False
-            elif point_d in game.snake:
-                isDownApple = False
-                isDownSnake = True
-                isDownWall = False
-            elif point_d.x < 0 or point_d.y < 0:
-                isDownApple = False
-                isDownSnake = False
-                isDownWall = True
-            count += 1
-
-
-        # down left direction
-        isDownLeftApple = False
-        isDownLeftSnake = False
-        isDownLeftWall = False
-        count = 1
-        while (isDownLeftApple == False and isDownLeftSnake == False and isDownLeftWall == False) and count < 10:
-            point_dl = Point(head.x - 20*count, head.y + 20*count)
-            if game.food == point_dl:
-                isDownLeftApple = True
-                isDownLeftSnake = False
-                isDownLeftWall = False
-            elif point_dl in game.snake:
-                isDownLeftApple = False
-                isDownLeftSnake = True
-                isDownLeftWall = False
-            elif point_dl.x < 0 or point_dl.y < 0:
-                isDownLeftApple = False
-                isDownLeftSnake = False
-                isDownLeftWall = True
-            count += 1
-
-        # left direction
-        isLeftApple = False
-        isLeftSnake = False
-        isLeftWall = False
-        count = 1
-        while (isLeftApple == False and isLeftSnake == False and isLeftWall == False) and count < 10:
-            point_l = Point(head.x - 20*count, head.y)
-            if game.food == point_l:
-                isLeftApple = True
-                isLeftSnake = False
-                isLeftWall = False
-            elif point_l in game.snake:
-                isLeftApple = False
-                isLeftSnake = True
-                isLeftWall = False
-            elif point_l.x < 0 or point_l.y < 0:
-                isLeftApple = False
-                isLeftSnake = False
-                isLeftWall = True
-            count += 1
-
-        # up left direction
-        isUpLeftApple = False
-        isUpLeftSnake = False
-        isUpLeftWall = False
-        count = 1
-        while (isUpLeftApple == False and isUpLeftSnake == False and isUpLeftWall == False) and count < 10:
-            point_ul = Point(head.x - 20*count, head.y - 20*count)
-            if game.food == point_ul:
-                isUpLeftApple = True
-                isUpLeftSnake = False
-                isUpLeftWall = False
-            elif point_ul in game.snake:
-                isUpLeftApple = False
-                isUpLeftSnake = True
-                isUpLeftWall = False
-            elif point_ul.x < 0 or point_ul.y < 0:
-                isUpLeftApple = False
-                isUpLeftSnake = False
-                isUpLeftWall = True
-            count += 1
-
-
-
-
 
 
         # Current direction bool
@@ -218,43 +42,157 @@ class Agent:
         apple_d = game.food.y > game.head.y
 
         # Current tail direction bool
-        tail_l = game.snake[-1].x < game.head.x
-        tail_r = game.snake[-1].x > game.head.x
-        tail_u = game.snake[-1].y < game.head.y
-        tail_d = game.snake[-1].y > game.head.y
+        tail_dir_l = game.snake[-1].x > game.snake[-2].x
+        tail_dir_r = game.snake[-1].x < game.snake[-2].x
+        tail_dir_u = game.snake[-1].y > game.snake[-2].y
+        tail_dir_d = game.snake[-1].y < game.snake[-2].y
+
+
+        isUpApple = False
+        isUpSnake = False
+        isUpWall = True
+        count = 1
+        while (isUpApple == False and isUpSnake == False and isUpWall == True) and count < 10:
+            snake_u = Point(head.x, head.y - 20 * count)
+            if game.food == snake_u:
+                isUpApple = True
+                isUpWall = False
+            elif snake_u in game.snake:
+                isUpSnake = True
+                isUpWall = False
+            count += 1
+
+        isUpRightApple = False
+        isUpRightSnake = False
+        isUpRightWall = True
+        count = 1
+        while (isUpRightApple == False and isUpRightSnake == False and isUpRightWall == True) and count < 10:
+            snake_ur = Point(head.x + 20 * count, head.y - 20 * count)
+            if game.food == snake_ur:
+                isUpRightApple = True
+                isUpRightWall = False
+            elif snake_ur in game.snake:
+                isUpRightSnake = True
+                isUpRightWall = False
+            count += 1
+        
+        isRightApple = False
+        isRightSnake = False
+        isRightWall = True
+        count = 1
+        while (isRightApple == False and isRightSnake == False and isRightWall == True) and count < 10:
+            snake_r = Point(head.x + 20 * count, head.y)
+            if game.food == snake_r:
+                isRightApple = True
+                isRightWall = False
+            elif snake_r in game.snake:
+                isRightSnake = True
+                isRightWall = False
+            count += 1
+        
+        isDownRightApple = False
+        isDownRightSnake = False
+        isDownRightWall = True
+        count = 1
+        while (isDownRightApple == False and isDownRightSnake == False and isDownRightWall == True) and count < 10:
+            snake_dr = Point(head.x + 20 * count, head.y + 20 * count)
+            if game.food == snake_dr:
+                isDownRightApple = True
+                isDownRightWall = False
+            elif snake_dr in game.snake:
+                isDownRightSnake = True
+                isDownRightWall = False
+            count += 1
+        
+        isDownApple = False
+        isDownSnake = False
+        isDownWall = True
+        count = 1
+        while (isDownApple == False and isDownSnake == False and isDownWall == True) and count < 10:
+            snake_d = Point(head.x, head.y + 20 * count)
+            if game.food == snake_d:
+                isDownApple = True
+                isDownWall = False
+            elif snake_d in game.snake:
+                isDownSnake = True
+                isDownWall = False
+            count += 1
+
+        
+        isDownLeftApple = False
+        isDownLeftSnake = False
+        isDownLeftWall = True
+        count = 1
+        while (isDownLeftApple == False and isDownLeftSnake == False and isDownLeftWall == True) and count < 10:
+            snake_dl = Point(head.x - 20 * count, head.y + 20 * count)
+            if game.food == snake_dl:
+                isDownLeftApple = True
+                isDownLeftWall = False
+            elif snake_dl in game.snake:
+                isDownLeftSnake = True
+                isDownLeftWall = False
+            count += 1
+
+        isLeftApple = False
+        isLeftSnake = False
+        isLeftWall = True
+        count = 1
+        while (isLeftApple == False and isLeftSnake == False and isLeftWall == True) and count < 10:
+            snake_l = Point(head.x - 20 * count, head.y)
+            if game.food == snake_l:
+                isLeftApple = True
+                isLeftWall = False
+            elif snake_l in game.snake:
+                isLeftSnake = True
+                isLeftWall = False
+            count += 1
+
+        isUpLeftApple = False
+        isUpLeftSnake = False
+        isUpLeftWall = True
+        count = 1
+        while (isUpLeftApple == False and isUpLeftSnake == False and isUpLeftWall == True) and count < 10:
+            snake_ul = Point(head.x - 20 * count, head.y - 20 * count)
+            if game.food == snake_ul:
+                isUpLeftApple = True
+                isUpLeftWall = False
+            elif snake_ul in game.snake:
+                isUpLeftSnake = True
+                isUpLeftWall = False
+            count += 1
+        
+
+        
+        
+
 
         state = [
+
             isUpApple,
             isUpSnake,
             isUpWall,
-
             isUpRightApple,
             isUpRightSnake,
             isUpRightWall,
-
             isRightApple,
             isRightSnake,
             isRightWall,
-
             isDownRightApple,
             isDownRightSnake,
             isDownRightWall,
-
             isDownApple,
             isDownSnake,
             isDownWall,
-
             isDownLeftApple,
             isDownLeftSnake,
             isDownLeftWall,
-            
             isLeftApple,
             isLeftSnake,
             isLeftWall,
-
             isUpLeftApple,
             isUpLeftSnake,
             isUpLeftWall,
+
 
             # Move direction
             dir_l,
@@ -262,11 +200,17 @@ class Agent:
             dir_u,
             dir_d,
             
+            # # Apple direction
+            apple_l,
+            apple_r,
+            apple_u,
+            apple_d,
+
             # Tail direction
-            tail_l,
-            tail_r,
-            tail_u,
-            tail_d,
+            tail_dir_l,
+            tail_dir_r,
+            tail_dir_u,
+            tail_dir_d,
             ]
 
         return np.array(state, dtype=int)
