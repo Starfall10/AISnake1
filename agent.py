@@ -5,6 +5,13 @@ from collections import deque
 from game import SnakeGameAI, Direction, Point
 from model import Linear_QNet, QTrainer
 from helper import plot
+import wandb
+
+wandb.init(
+    project="snake-ai",
+
+)
+
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
@@ -17,7 +24,7 @@ class Agent:
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(16, 256, 3)
+        self.model = Linear_QNet(24, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
 
@@ -40,6 +47,15 @@ class Agent:
         point_drdr = Point(head.x + 40, head.y + 40)
         point_dl = Point(head.x - 20, head.y + 20)
         point_dldl = Point(head.x - 40, head.y + 40)
+
+        point_uur = Point(head.x + 20, head.y - 40)
+        point_urr = Point(head.x + 40, head.y - 20)
+        point_ddr = Point(head.x + 20, head.y + 40)
+        point_drr = Point(head.x + 40, head.y + 20)
+        point_uul = Point(head.x - 20, head.y - 40)
+        point_ull = Point(head.x - 40, head.y - 20)
+        point_ddl = Point(head.x - 20, head.y + 40)
+        point_dll = Point(head.x - 40, head.y + 20)
 
 
         # Current direction bool
@@ -135,7 +151,53 @@ class Agent:
             (dir_l and game.is_collision(point_dr)) or
             (dir_l and game.is_collision(point_drdr)),
 
+            # Danger up up right
+            (dir_u and game.is_collision(point_uur)) or
+            (dir_r and game.is_collision(point_drr)) or
+            (dir_d and game.is_collision(point_ddl)) or
+            (dir_l and game.is_collision(point_ull)),
 
+            # Danger up right right
+            (dir_u and game.is_collision(point_urr)) or
+            (dir_r and game.is_collision(point_ddr)) or
+            (dir_d and game.is_collision(point_dll)) or
+            (dir_l and game.is_collision(point_ddl)),
+
+            # Danger down right right
+            (dir_u and game.is_collision(point_drr)) or
+            (dir_r and game.is_collision(point_ddl)) or
+            (dir_d and game.is_collision(point_uul)) or
+            (dir_l and game.is_collision(point_drr)),
+
+            # Danger down down right
+            (dir_u and game.is_collision(point_ddr)) or
+            (dir_r and game.is_collision(point_dll)) or
+            (dir_d and game.is_collision(point_uur)) or
+            (dir_l and game.is_collision(point_urr)),
+
+            # Danger up up left
+            (dir_u and game.is_collision(point_uul)) or
+            (dir_r and game.is_collision(point_urr)) or
+            (dir_d and game.is_collision(point_ddr)) or
+            (dir_l and game.is_collision(point_dll)),
+
+            # Danger up left left
+            (dir_u and game.is_collision(point_ull)) or
+            (dir_r and game.is_collision(point_uur)) or
+            (dir_d and game.is_collision(point_drr)) or
+            (dir_l and game.is_collision(point_ddl)),
+
+            # Danger down left left
+            (dir_u and game.is_collision(point_dll)) or
+            (dir_r and game.is_collision(point_uul)) or
+            (dir_d and game.is_collision(point_urr)) or
+            (dir_l and game.is_collision(point_ddr)),
+
+            # Danger down down left
+            (dir_u and game.is_collision(point_ddl)) or
+            (dir_r and game.is_collision(point_ull)) or
+            (dir_d and game.is_collision(point_uur)) or
+            (dir_l and game.is_collision(point_drr)),
 
 
 
@@ -190,6 +252,8 @@ class Agent:
         return final_move
 
 
+
+
 def train():
     plot_scores = []
     plot_mean_scores = []
@@ -230,7 +294,12 @@ def train():
             total_score += score
             mean_score = total_score / agent.n_games
             plot_mean_scores.append(mean_score)
-            plot(plot_scores, plot_mean_scores)
+            # plot(plot_scores, plot_mean_scores)
+
+            plotScore = score
+            plotMean = mean_score
+
+            wandb.log({"score": plotScore, "mean_score": plotMean})
 
 
 if __name__ == '__main__':
