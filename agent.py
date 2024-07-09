@@ -24,7 +24,7 @@ class Agent:
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(24, 256, 3)
+        self.model = Linear_QNet(32, 256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
 
@@ -32,12 +32,16 @@ class Agent:
         head = game.snake[0]
         point_l = Point(head.x - 20, head.y)
         point_ll = Point(head.x - 40, head.y)
+        point_lll = Point(head.x - 60, head.y)
         point_r = Point(head.x + 20, head.y)
         point_rr = Point(head.x + 40, head.y)
+        point_rrr = Point(head.x + 60, head.y)
         point_u = Point(head.x, head.y - 20)
         point_uu = Point(head.x, head.y - 40)
+        point_uuu = Point(head.x, head.y - 60)
         point_d = Point(head.x, head.y + 20)
         point_dd = Point(head.x, head.y + 40)
+        point_ddd = Point(head.x, head.y + 60)
 
         point_ur = Point(head.x + 20, head.y - 20)
         point_urur = Point(head.x + 40, head.y - 40)
@@ -71,85 +75,107 @@ class Agent:
         apple_d = game.food.y > game.head.y
 
         state = [
-            # Danger straight
-            (dir_r and game.is_collision(point_r)) or
-            (dir_r and game.is_collision(point_rr)) or
-            (dir_l and game.is_collision(point_l)) or
-            (dir_l and game.is_collision(point_ll)) or
+            # Danger up
             (dir_u and game.is_collision(point_u)) or
-            (dir_u and game.is_collision(point_uu)) or
+            (dir_r and game.is_collision(point_r)) or
             (dir_d and game.is_collision(point_d)) or
-            (dir_d and game.is_collision(point_dd)),
+            (dir_l and game.is_collision(point_l)),
 
             # Danger right
-            (dir_r and game.is_collision(point_d)) or
-            (dir_r and game.is_collision(point_dd)) or
-            (dir_l and game.is_collision(point_u)) or
-            (dir_l and game.is_collision(point_uu)) or
             (dir_u and game.is_collision(point_r)) or
-            (dir_u and game.is_collision(point_rr)) or
+            (dir_r and game.is_collision(point_d)) or
             (dir_d and game.is_collision(point_l)) or
-            (dir_d and game.is_collision(point_ll)),
+            (dir_l and game.is_collision(point_u)),
 
             # Danger left
-            (dir_r and game.is_collision(point_u)) or
-            (dir_r and game.is_collision(point_uu)) or
-            (dir_l and game.is_collision(point_d)) or
-            (dir_l and game.is_collision(point_dd)) or
             (dir_u and game.is_collision(point_l)) or
-            (dir_u and game.is_collision(point_ll)) or
+            (dir_r and game.is_collision(point_u)) or
             (dir_d and game.is_collision(point_r)) or
-            (dir_d and game.is_collision(point_rr)),
+            (dir_l and game.is_collision(point_d)),
 
             # Danger down
-            (dir_r and game.is_collision(point_l)) or
-            (dir_r and game.is_collision(point_ll)) or
-            (dir_l and game.is_collision(point_r)) or
-            (dir_l and game.is_collision(point_rr)) or
             (dir_u and game.is_collision(point_d)) or
-            (dir_u and game.is_collision(point_dd)) or
+            (dir_r and game.is_collision(point_l)) or
             (dir_d and game.is_collision(point_u)) or
-            (dir_d and game.is_collision(point_uu)),
+            (dir_l and game.is_collision(point_r)),
+
+            # Danger up up
+            (dir_u and game.is_collision(point_uu)) or
+            (dir_r and game.is_collision(point_rr)) or
+            (dir_d and game.is_collision(point_dd)) or
+            (dir_l and game.is_collision(point_ll)),
+
+            # Danger right right
+            (dir_u and game.is_collision(point_rr)) or
+            (dir_r and game.is_collision(point_dd)) or
+            (dir_d and game.is_collision(point_ll)) or
+            (dir_l and game.is_collision(point_uu)),
+
+            # Danger left left
+            (dir_u and game.is_collision(point_ll)) or
+            (dir_r and game.is_collision(point_uu)) or
+            (dir_d and game.is_collision(point_rr)) or
+            (dir_l and game.is_collision(point_dd)),
+
+            # Danger down down
+            (dir_u and game.is_collision(point_dd)) or
+            (dir_r and game.is_collision(point_ll)) or
+            (dir_d and game.is_collision(point_uu)) or
+            (dir_l and game.is_collision(point_rr)),
+
+            # ------#
+            
 
             # Danger up right
             (dir_u and game.is_collision(point_ur)) or
-            (dir_u and game.is_collision(point_urur)) or
             (dir_r and game.is_collision(point_dr)) or
-            (dir_r and game.is_collision(point_drdr)) or
             (dir_d and game.is_collision(point_dl)) or
-            (dir_d and game.is_collision(point_dldl)) or
-            (dir_l and game.is_collision(point_ul)) or
-            (dir_l and game.is_collision(point_ulul)),
+            (dir_l and game.is_collision(point_ul)),
 
             # Danger up left
             (dir_u and game.is_collision(point_ul)) or
-            (dir_u and game.is_collision(point_ulul)) or
             (dir_l and game.is_collision(point_dl)) or
-            (dir_l and game.is_collision(point_dldl)) or
             (dir_d and game.is_collision(point_dr)) or
-            (dir_d and game.is_collision(point_drdr)) or
-            (dir_r and game.is_collision(point_ur)) or
-            (dir_r and game.is_collision(point_urur)),
+            (dir_r and game.is_collision(point_ur)),
 
             # Danger down right
             (dir_u and game.is_collision(point_dr)) or
-            (dir_u and game.is_collision(point_drdr)) or
             (dir_r and game.is_collision(point_dl)) or
-            (dir_r and game.is_collision(point_dldl)) or
             (dir_d and game.is_collision(point_ul)) or
-            (dir_d and game.is_collision(point_ulul)) or
-            (dir_l and game.is_collision(point_ur)) or
-            (dir_l and game.is_collision(point_urur)),
+            (dir_l and game.is_collision(point_ur)),
 
             # Danger down left
             (dir_u and game.is_collision(point_dl)) or
-            (dir_u and game.is_collision(point_dldl)) or
             (dir_r and game.is_collision(point_ul)) or
-            (dir_r and game.is_collision(point_ulul)) or
             (dir_d and game.is_collision(point_ur)) or
+            (dir_l and game.is_collision(point_dr)),
+
+            # Danger up right up right
+            (dir_u and game.is_collision(point_urur)) or
+            (dir_r and game.is_collision(point_drdr)) or
+            (dir_d and game.is_collision(point_dldl)) or
+            (dir_l and game.is_collision(point_ulul)),
+
+            # Danger up left up left 
+            (dir_u and game.is_collision(point_ulul)) or
+            (dir_l and game.is_collision(point_dldl)) or
+            (dir_d and game.is_collision(point_drdr)) or
+            (dir_r and game.is_collision(point_urur)),
+
+            # Danger down right down right
+            (dir_u and game.is_collision(point_drdr)) or
+            (dir_r and game.is_collision(point_dldl)) or
+            (dir_d and game.is_collision(point_ulul)) or
+            (dir_l and game.is_collision(point_urur)),
+
+            # Danger down left down left
+            (dir_u and game.is_collision(point_dldl)) or
+            (dir_r and game.is_collision(point_ulul)) or
             (dir_d and game.is_collision(point_urur)) or
-            (dir_l and game.is_collision(point_dr)) or
             (dir_l and game.is_collision(point_drdr)),
+
+            # ------#
+
 
             # Danger up up right
             (dir_u and game.is_collision(point_uur)) or
