@@ -24,7 +24,7 @@ class Agent:
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(32, 256, 3)
+        self.model = Linear_QNet(36, 256,256, 3)
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
 
@@ -122,6 +122,30 @@ class Agent:
             (dir_r and game.is_collision(point_ll)) or
             (dir_d and game.is_collision(point_uu)) or
             (dir_l and game.is_collision(point_rr)),
+
+            # Danger up up up
+            (dir_u and game.is_collision(point_uuu)) or
+            (dir_r and game.is_collision(point_rrr)) or
+            (dir_d and game.is_collision(point_ddd)) or
+            (dir_l and game.is_collision(point_lll)),
+
+            # Danger right right right
+            (dir_u and game.is_collision(point_rrr)) or
+            (dir_r and game.is_collision(point_ddd)) or
+            (dir_d and game.is_collision(point_lll)) or
+            (dir_l and game.is_collision(point_uuu)),
+
+            # Danger left left
+            (dir_u and game.is_collision(point_lll)) or
+            (dir_r and game.is_collision(point_uuu)) or
+            (dir_d and game.is_collision(point_rrr)) or
+            (dir_l and game.is_collision(point_ddd)),
+
+            # Danger down down down
+            (dir_u and game.is_collision(point_ddd)) or
+            (dir_r and game.is_collision(point_lll)) or
+            (dir_d and game.is_collision(point_uuu)) or
+            (dir_l and game.is_collision(point_rrr)),
 
             # ------#
             
