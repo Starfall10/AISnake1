@@ -12,19 +12,23 @@ wandb.init(
 
 )
 
-
 MAX_MEMORY = 100_000
-BATCH_SIZE = 1000
+BATCH_SIZE = 5000
 LR = 0.001
+
+
+
 
 class Agent:
 
     def __init__(self):
+        
         self.n_games = 0
         self.epsilon = 0 # randomness
         self.gamma = 0.9 # discount rate
         self.memory = deque(maxlen=MAX_MEMORY) # popleft()
-        self.model = Linear_QNet(56, 256, 3)
+        self.model = Linear_QNet(56, 256, 256, 3)
+        self.model = self.model.to("cuda")
         self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
 
@@ -469,6 +473,7 @@ def train():
     record = 0
     agent = Agent()
     game = SnakeGameAI()
+    step = 0
     while True:
         # get old state
         state_old = agent.get_state(game)
@@ -479,9 +484,10 @@ def train():
         # perform move and get new state
         reward, done, score = game.play_step(final_move)
         state_new = agent.get_state(game)
+        step += 1
 
         # train short memory
-        agent.train_short_memory(state_old, final_move, reward, state_new, done)
+        # agent.train_short_memory(state_old, final_move, reward, state_new, done)
 
         # remember
         agent.remember(state_old, final_move, reward, state_new, done)
@@ -490,6 +496,7 @@ def train():
             # train long memory, plot result
             game.reset()
             agent.n_games += 1
+        if step % BATCH_SIZE == 0:
             agent.train_long_memory()
 
             if score > record:
@@ -512,3 +519,9 @@ def train():
 
 if __name__ == '__main__':
     train()
+
+     
+      
+       
+        
+        

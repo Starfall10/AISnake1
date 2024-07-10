@@ -1,5 +1,6 @@
 import wandb
 import random
+import torch
 for i in range(1):
     # start a new wandb run to track this script
     wandb.init(
@@ -21,7 +22,12 @@ for i in range(1):
     
 
         # log metrics to wandb
-    wandb.log({"acc": acc, "loss": loss})
+    # wandb.log({"acc": acc, "loss": loss})
 
     # [optional] finish the wandb run, necessary in notebooks
-    wandb.finish()
+    # wandb.finish()
+
+    print(torch.cuda.is_available())
+    print(torch.cuda.current_device())
+    print(torch.cuda.get_device_name())
+
